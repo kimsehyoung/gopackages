@@ -20,7 +20,7 @@ var (
 const (
 	timestampFormat  = "2006-01-02 15:04:05" // refer to time.RFC3339
 	maxMessageLength = "256"
-	logCallStack     = "shlog.Log" // package.function
+	logCallStack     = "shlog.Logf" // package.function
 	maxCallerDepth   = 15
 )
 const (
@@ -109,7 +109,7 @@ func ChangeLogLevel(level string) {
 }
 
 // level: TRACE, DEBUG, INFO, WARN, ERROR, FATAL, PANIC
-func Log(level string, format string, args ...interface{}) {
+func Logf(level string, format string, args ...interface{}) {
 	switch level {
 	case "PANIC":
 		logger.Panicf(format, args...)
