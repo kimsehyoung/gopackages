@@ -1,7 +1,7 @@
 # gopackage
 
 ## commit message rule
-**1. \[type][packagename] message ...**  \
+1. **[type][packagename] message ...**  \
 type
     - major: It's backward incompatible due to change of existing API.
     - minor: Introduction of New function or im
