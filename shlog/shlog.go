@@ -79,7 +79,8 @@ func callerPrettyfier(f *runtime.Frame) (function string, file string) {
 		if strings.Contains(frame.Function, logCallStack) {
 			frame, _ = frames.Next()
 			function := frame.Function[strings.LastIndex(frame.Function, ".")+1:]
-			file := strings.Replace(filepath.Base(frame.File), ".go", "", 1)
+			file := filepath.Base(filepath.Dir(frame.File))
+			// file := strings.Replace(filepath.Base(frame.File), ".go", "", 1)
 			return function, file
 		}
 	}
