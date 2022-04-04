@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"reflect"
 	"runtime"
 	"strings"
 
@@ -80,7 +81,6 @@ func callerPrettyfier(f *runtime.Frame) (function string, file string) {
 			frame, _ = frames.Next()
 			function := frame.Function[strings.LastIndex(frame.Function, ".")+1:]
 			file := filepath.Base(filepath.Dir(frame.File))
-			// file := strings.Replace(filepath.Base(frame.File), ".go", "", 1)
 			return function, file
 		}
 	}
@@ -106,26 +106,6 @@ func ChangeLogLevel(level string) {
 		logger.SetLevel(logrus.InfoLevel)
 	default:
 		fmt.Println("Invalid log level. Refer to annotion")
-	}
-}
-
-// level: TRACE, DEBUG, INFO, WARN, ERROR, FATAL, PANIC
-func Logf(level string, format string, args ...interface{}) {
-	switch level {
-	case "PANIC":
-		logger.Panicf(format, args...)
-	case "FATAL":
-		logger.Fatalf(format, args...)
-	case "ERROR":
-		logger.Errorf(format, args...)
-	case "WARN":
-		logger.Warnf(format, args...)
-	case "DEBUG":
-		logger.Debugf(format, args...)
-	case "TRACE":
-		logger.Tracef(format, args...)
-	default: // INFO
-		logger.Infof(format, args...)
 	}
 }
 
@@ -156,8 +136,91 @@ func (f *CustomFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 	b.WriteString(fmt.Sprintf("[%s][%s]", file, function))
 
 	// message
-	message := " %." + f.MaxMessageLength + "s\n"
+	message := " %." + f.MaxMessageLength + "s"
 	b.WriteString(fmt.Sprintf(message, entry.Message))
 
+	// fields
+	for k, v := range entry.Data {
+		b.WriteString(fmt.Sprintf(" \x1b[%dm%s\x1b[0m=", levelColor, k))
+		b.WriteString(fmt.Sprintf("%v", v))
+	}
+
+	b.WriteString("\n")
 	return b.Bytes(), nil
+}
+
+// level: TRACE, DEBUG, INFO, WARN, ERROR, FATAL, PANIC
+func Log(level string, args ...interface{}) {
+	switch level {
+	case "PANIC":
+		logger.Panic(args...)
+	case "FATAL":
+		logger.Fatal(args...)
+	case "ERROR":
+		logger.Error(args...)
+	case "WARN":
+		logger.Warn(args...)
+	case "DEBUG":
+		logger.Debug(args...)
+	case "TRACE":
+		logger.Trace(args...)
+	default: // INFO
+		logger.Info(args...)
+	}
+}
+
+// level: TRACE, DEBUG, INFO, WARN, ERROR, FATAL, PANIC
+func Logf(level string, format string, args ...interface{}) {
+	switch level {
+	case "PANIC":
+		logger.Panicf(format, args...)
+	case "FATAL":
+		logger.Fatalf(format, args...)
+	case "ERROR":
+		logger.Errorf(format, args...)
+	case "WARN":
+		logger.Warnf(format, args...)
+	case "DEBUG":
+		logger.Debugf(format, args...)
+	case "TRACE":
+		logger.Tracef(format, args...)
+	default: // INFO
+		logger.Infof(format, args...)
+	}
+}
+
+func LogFields(level string, message string, object interface{}) {
+
+	var elmts reflect.Value
+	if t := reflect.TypeOf(object); t.Kind() == reflect.Ptr {
+		elmts = reflect.ValueOf(object).Elem()
+	} else {
+		elmts = reflect.ValueOf(object)
+	}
+
+	fields := make(map[string]interface{})
+
+	for i := 0; i < elmts.NumField(); i++ {
+		field := elmts.Type().Field(i).Name
+		v := elmts.Field(i)
+		fields[field] = v
+	}
+
+	switch level {
+	case "PANIC":
+		logger.WithFields(fields).Panic(message)
+	case "FATAL":
+		logger.WithFields(fields).Fatal(message)
+	case "ERROR":
+		logger.WithFields(fields).Error(message)
+	case "WARN":
+		logger.WithFields(fields).Warn(message)
+	case "DEBUG":
+		logger.WithFields(fields).Debug(message)
+	case "TRACE":
+		logger.WithFields(fields).Trace(message)
+	default: // INFO
+		logger.WithFields(fields).Info(message)
+
+	}
 }
