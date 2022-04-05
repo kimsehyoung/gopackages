@@ -21,7 +21,7 @@ var (
 const (
 	timestampFormat  = "2006-01-02 15:04:05" // refer to time.RFC3339
 	maxMessageLength = "256"
-	logCallStack     = "shlog.Logf" // package.function
+	logCallStack     = "shlog.Log" // package.function
 	maxCallerDepth   = 15
 )
 const (
