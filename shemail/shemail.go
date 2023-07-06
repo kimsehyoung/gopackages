@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	fromAddress = "ksh6572@mediazen.co.kr"
+	fromAddress = "test@example.co.kr"
 	smtpServer  = "smtp.mailplug.co.kr:465"
 )
 
