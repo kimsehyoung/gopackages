@@ -24,6 +24,17 @@ const (
 	logCallStack     = "shlog.Log" // package.function
 	maxCallerDepth   = 15
 )
+
+const (
+	PANIC = "PANIC"
+	FATAL = "FATAL"
+	ERROR = "ERROR"
+	WARN  = "WARN"
+	DEBUG = "DEBUG"
+	TRACE = "TRACE"
+	INFO  = "INFO"
+)
+
 const (
 	FG_BLACK = 30 + iota
 	FG_RED
